@@ -1,0 +1,52 @@
+pipeline {
+  agent any
+  
+    parameters {
+        string(name: 'BRANCH_NAME', defaultValue: 'feature', description: 'Branch to build')
+    }
+    
+  environment {
+    CLOUDSDK_CORE_PROJECT='practice-422202'
+  }
+  stages {
+    stage('test') {
+      steps {
+        withCredentials([file(credentialsId: 'gcloud-cred', variable: 'GCLOUD_CRED')]) {
+          sh '''
+            gcloud version
+            gcloud auth activate-service-account --key-file="$GCLOUD_CRED"
+            gcloud projects list
+          '''
+        }
+      }
+    }
+    stage('Checkout') {
+        steps {
+            // Checkout the specified branch
+             git branch: "${params.BRANCH_NAME}",
+                    url: 'https://github.com/lionelsakoue/project-lio.git'
+        }
+    }
+    stage('Terraform Init') {
+        steps {
+            dir('gke') {
+                sh 'terraform init'
+            }
+        }
+    }
+    stage('Terraform plan') {
+        steps {
+            dir('gke') {
+                sh 'terraform plan'
+            }
+        }
+    }
+    stage('Terraform Apply') {
+        steps {
+            dir('gke') {
+                sh 'terraform apply -auto-approve'
+            }
+        }
+    }
+  }
+}
