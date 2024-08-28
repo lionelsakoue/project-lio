@@ -4,8 +4,9 @@ resource "google_container_cluster" "primary" {
 
   initial_node_count = var.initial_node_count
 
-  # Enable monitoring and logging
-  enable_stackdriver_kubernetes = true
+  # Enable Stackdriver logging and monitoring
+  enable_stackdriver_logging   = true
+  enable_stackdriver_monitoring = true
 
   # Set network and subnetwork
   network    = "default"  # Adjust network as needed
@@ -45,4 +46,3 @@ resource "google_container_node_pool" "primary_nodes" {
     ]
   }
 }
-
