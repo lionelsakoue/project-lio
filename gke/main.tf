@@ -6,10 +6,22 @@ resource "google_container_cluster" "primary" {
 
   node_config {
     machine_type = var.machine_type
-    oauth_scopes  = [
+    disk_size_gb = var.disk_size_gb  # Set disk size
+    oauth_scopes = [
       "https://www.googleapis.com/auth/cloud-platform",
     ]
+    
+    # Enable inbound and outbound traffic
+    network    = "default"  # Use your network or default
+    subnetwork = "default"  # Use your subnetwork or default
+
+    # Enable monitoring
+    logging_service  = "logging.googleapis.com/kubernetes"
+    monitoring_service = "monitoring.googleapis.com/kubernetes"
   }
+
+  # Configure zones for nodes
+  node_locations = ["us-central1-a", "us-central1-b"]
 
   lifecycle {
     create_before_destroy = true
@@ -27,9 +39,13 @@ resource "google_container_node_pool" "primary_nodes" {
 
   node_config {
     machine_type = var.machine_type
-    oauth_scopes  = [
+    disk_size_gb = var.disk_size_gb  # Set disk size
+    oauth_scopes = [
       "https://www.googleapis.com/auth/cloud-platform",
     ]
+
+    # Enable inbound and outbound traffic
+    network    = "default"  # Use your network or default
+    subnetwork = "default"  # Use your subnetwork or default
   }
 }
-
